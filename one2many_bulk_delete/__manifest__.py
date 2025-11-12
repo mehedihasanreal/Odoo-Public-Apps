@@ -1,14 +1,12 @@
 {
     'name': 'One2Many Bulk Delete',
     'version': '16.0.1.0.0',
-    'category': 'Tools',
+    'category': 'Extra Tools',
     'summary': 'Add bulk delete functionality to One2Many fields',
     'description': """
         One2Many Bulk Delete
         This module adds bulk delete functionality to One2Many fields in Odoo.
-
         Compatible with Odoo 16.0, 17.0, and 18.0
-
         Features:
         * Select multiple records in One2Many fields with checkboxes
         * Select All / Deselect All functionality
