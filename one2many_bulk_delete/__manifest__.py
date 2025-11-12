@@ -18,8 +18,6 @@
     """,
     'author': 'MD. MEHEDI HASAN REAL',
     'website': 'https://www.linkedin.com/in/mehedihasanreal/',
-    'price': 5.0,
-    'currency': 'USD',
     'license': 'LGPL-3',
     'depends': ['web', 'sale', 'purchase'],
     'data': [
