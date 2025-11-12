@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        EXAMPLE USAGE - Uncomment to use
+        
+        These are example views showing how to add the bulk delete widget
+        to sale order lines and invoice lines.
+    -->
+
+    <!-- Example 1: Add bulk delete to Sale Order Lines -->
+    <record id="view_order_form_inherit_bulk_delete" model="ir.ui.view">
+        <field name="name">sale.order.form.bulk.delete</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name="widget">one2many_bulk_delete</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Example 2: Add bulk delete to Invoice Lines -->
+
+    <record id="view_invoice_form_inherit_bulk_delete" model="ir.ui.view">
+        <field name="name">account.move.form.bulk.delete</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
+                <attribute name="widget">one2many_bulk_delete</attribute>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- Example 3: Add bulk delete to Purchase Order Lines -->
+    <record id="view_purchase_order_form_inherit_bulk_delete" model="ir.ui.view">
+        <field name="name">purchase.order.form.bulk.delete</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name="widget">one2many_bulk_delete</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
+

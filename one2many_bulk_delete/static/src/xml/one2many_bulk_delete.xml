@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    One2Many Bulk Delete Widget Templates for Odoo 16
+
+    This file contains the QWeb templates for the bulk delete widget.
+    It defines the UI structure including the delete button bar and control panel.
+-->
+<templates xml:space="preserve">
+
+    <!--
+        Custom X2Many Field Template for Odoo 16
+
+        This template extends the standard X2Many field to add:
+        - A delete button bar that appears when records are selected
+        - Proper singular/plural text for selected record count
+        - Integration with the standard control panel and pager
+    -->
+    <t t-name="one2many_bulk_delete.X2ManyField" owl="1">
+        <div t-attf-class="o_field_x2many o_field_x2many_{{viewMode}}">
+
+            <!--
+                Bulk Delete Action Bar
+                Only shown when:
+                1. At least one record is selected
+                2. Parent record state allows deletion (not in done/cancel/posted state)
+                Displays count of selected records and delete button
+            -->
+            <t t-if="bulkState.selectedIds.size > 0 and this.isAllowedToDelete()">
+                <div class="o_bulk_delete_bar bg-info text-white p-2 d-flex align-items-center justify-content-between mb-2">
+                    <!-- Left side: Selection count with icon -->
+                    <span>
+                        <i class="fa fa-check-square-o me-2"/>
+                        <!-- Show singular "Record" when only 1 is selected -->
+                        <t t-if="bulkState.selectedIds.size === 1">
+                            <t t-esc="bulkState.selectedIds.size"/> Record Selected
+                        </t>
+                        <!-- Show plural "Records" when more than 1 is selected -->
+                        <t t-else="">
+                            <t t-esc="bulkState.selectedIds.size"/> Records Selected
+                        </t>
+                    </span>
+                    <!-- Right side: Delete button -->
+                    <button class="btn btn-sm btn-danger"
+                            type="button"
+                            t-on-click="onBulkDelete">
+                        <i class="fa fa-trash me-1"/> Delete Selected
+                    </button>
+                </div>
+            </t>
+
+            <!--
+                Control Panel
+                Contains the "Add" button (for kanban view) and pager
+                This is the standard X2Many control panel
+            -->
+            <div class="o_x2m_control_panel">
+                <!-- Add button (only shown in kanban view when displayAddButton is true) -->
+                <t t-if="displayAddButton">
+                    <div class="o_cp_buttons" role="toolbar" aria-label="Control panel buttons" t-ref="buttons">
+                        <div>
+                            <button type="button"
+                                    class="btn btn-secondary o-kanban-button-new"
+                                    title="Create record"
+                                    accesskey="c"
+                                    t-on-click="() => this.onAdd()">
+                                <t t-esc="addButtonText"/>
+                            </button>
+                        </div>
+                    </div>
+                </t>
+                <!-- Pager (only shown when there are more records than the limit) -->
+                <div class="o_cp_pager" role="search">
+                    <Pager t-if="props.value.count > props.value.limit" t-props="pagerProps"/>
+                </div>
+            </div>
+
+            <!--
+                Renderer
+                Renders the actual list or kanban view
+                Uses our custom BulkDeleteListRenderer for list view
+                Uses standard KanbanRenderer for kanban view
+            -->
+            <ListRenderer t-if="viewMode === 'list'" t-props="this.rendererProps" />
+            <KanbanRenderer t-elif="viewMode" t-props="this.rendererProps" />
+        </div>
+    </t>
+</templates>

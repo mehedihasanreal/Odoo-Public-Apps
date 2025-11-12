@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One2Many Bulk Delete - Odoo 16</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .section {
+            background: white;
+            padding: 40px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin: 25px 0 15px 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .feature-card h3 {
+            color: #667eea;
+            margin-top: 0;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .screenshot-placeholder {
+            background: #e9ecef;
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 60px 20px;
+            text-align: center;
+            margin: 20px 0;
+            color: #667eea;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .screenshot {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+
+        .demo-gif {
+            width: 100%;
+            max-width: 900px;
+            margin: 30px auto;
+            display: block;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .installation-steps {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 5px solid #28a745;
+        }
+
+        .installation-steps ol {
+            margin-left: 20px;
+            line-height: 2;
+        }
+
+        .installation-steps li {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .author-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .author-section h2 {
+            color: white;
+            border: none;
+            padding: 0;
+        }
+
+        .author-section a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 2px solid white;
+            transition: opacity 0.3s ease;
+        }
+
+        .author-section a:hover {
+            opacity: 0.8;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            margin: 10px 5px;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #764ba2;
+        }
+
+        ul {
+            margin-left: 20px;
+            line-height: 2;
+        }
+
+        ul li {
+            margin-bottom: 8px;
+        }
+
+        .compatibility {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .compatibility h3 {
+            color: #28a745;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>⚡ One2Many Bulk Delete</h1>
+            <p>Efficiently delete multiple records from One2Many fields with just one click!</p>
+            <span class="version-badge">Odoo 16.0 | 17.0 | 18.0 | Version 1.0.0</span>
+        </div>
+
+        <!-- Demo GIF Section -->
+        <div class="section">
+            <h2>📹 See It In Action</h2>
+            <img src="../src/images/demo.gif" alt="One2Many Bulk Delete Demo" class="demo-gif">
+        </div>
+
+        <!-- Features Section -->
+        <div class="section">
+            <h2>✨ Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">☑️</div>
+                    <h3>Checkbox Selection</h3>
+                    <p>Select multiple records easily with checkboxes in each row of your One2Many fields.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h3>Select All</h3>
+                    <p>Quickly select or deselect all records with a single click using the header checkbox.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🗑️</div>
+                    <h3>Bulk Delete</h3>
+                    <p>Delete all selected records at once with a confirmation dialog to prevent accidental deletions.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>State-Based Control</h3>
+                    <p>Automatically hides delete functionality when parent records are in restricted states (done, posted, cancelled).</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Real-time Updates</h3>
+                    <p>See selection count update in real-time as you select/deselect records.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Easy Integration</h3>
+                    <p>Simply add <span class="highlight">widget="one2many_bulk_delete"</span> to any One2Many field in your XML views.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screenshots Section -->
+        <div class="section">
+            <h2>📸 Screenshots</h2>
+
+            <h3>1. Checkbox Selection</h3>
+            <img src="../src/images/screenshot_1_selection.png" alt="Checkbox Selection" class="screenshot">
+
+            <h3>2. Select All Functionality</h3>
+            <img src="../src/images/screenshot_2_select_all.png" alt="Select All" class="screenshot">
+
+            <h3>3. Delete Confirmation Dialog</h3>
+            <img src="../src/images/screenshot_3_confirmation.png" alt="Delete Confirmation" class="screenshot">
+
+            <h3>4. Success Notification</h3>
+            <img src="../src/images/screenshot_4_success.png" alt="Success Notification" class="screenshot">
+        </div>
+
+        <!-- How It Works -->
+        <div class="section">
+            <h2>🔧 How It Works</h2>
+            <ol style="line-height: 2; font-size: 1.1em;">
+                <li><strong>Select Records:</strong> Click checkboxes next to the records you want to delete</li>
+                <li><strong>Review Selection:</strong> See the count of selected records in real-time</li>
+                <li><strong>Click Delete:</strong> Press the "Delete Selected" button</li>
+                <li><strong>Confirm:</strong> Confirm your action in the dialog box</li>
+                <li><strong>Done!</strong> Records are deleted and changes are saved to the database</li>
+            </ol>
+        </div>
+
+        <!-- Installation -->
+        <div class="section">
+            <h2>📦 Installation</h2>
+            <div class="installation-steps">
+                <ol>
+                    <li>Download the module for your Odoo version from Odoo App Store</li>
+                    <li>Extract the module to your Odoo addons directory</li>
+                    <li>Restart your Odoo server</li>
+                    <li>Update the apps list in Odoo (Apps → Update Apps List)</li>
+                    <li>Search for "One2Many Bulk Delete" and install it</li>
+                    <li>Start using it in your One2Many fields!</li>
+                </ol>
+            </div>
+
+            <div style="background: #e7f3ff; border-left: 5px solid #2196F3; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                <strong>💡 Multi-Version Support:</strong> This module is compatible with Odoo 16.0, 17.0, and 18.0.
+                Make sure to download the version that matches your Odoo installation. The module uses standard
+                web framework components that are stable across these versions.
+            </div>
+        </div>
+
+        <!-- Usage -->
+        <div class="section">
+            <h2>💻 Usage</h2>
+            <p>Add the widget to any One2Many field in your XML views:</p>
+            <div class="code-block">
+                &lt;field name="order_line" widget="one2many_bulk_delete"&gt;<br/>
+                    &lt;tree&gt;<br/>
+                        &lt;field name="product_id"/&gt;<br/>
+                        &lt;field name="product_uom_qty"/&gt;<br/>
+                        &lt;field name="price_unit"/&gt;<br/>
+                    &lt;/tree&gt;<br/>
+                &lt;/field&gt;
+            </div>
+            <p style="margin-top: 20px;">That's it! The bulk delete functionality will be automatically available.</p>
+        </div>
+
+        <!-- Compatibility -->
+        <div class="section">
+            <div class="compatibility">
+                <h3>✅ Compatibility</h3>
+                <ul>
+                    <li><strong>Odoo Versions:</strong> 16.0, 17.0, 18.0</li>
+                    <li><strong>Community Edition:</strong> ✅ Fully Supported</li>
+                    <li><strong>Enterprise Edition:</strong> ✅ Fully Supported</li>
+                    <li><strong>Dependencies:</strong> web, sale, purchase</li>
+                    <li><strong>Technology:</strong> ES6 Modules, OWL Framework</li>
+                </ul>
+            </div>
+
+            <h3 style="margin-top: 30px; color: #667eea;">📋 Version-Specific Notes</h3>
+            <ul style="line-height: 2;">
+                <li><strong>Odoo 16.0:</strong> ✅ Fully tested and working</li>
+                <li><strong>Odoo 17.0:</strong> ✅ Compatible (uses same OWL and module structure)</li>
+                <li><strong>Odoo 18.0:</strong> ✅ Compatible (uses same OWL and module structure)</li>
+            </ul>
+
+            <div style="background: #fff3cd; border-left: 5px solid #ffc107; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                <strong>⚠️ Note:</strong> While the module is built with forward-compatible code patterns,
+                we recommend testing in your specific Odoo version before production use.
+                The module uses standard Odoo web framework components that are stable across versions 16-18.
+            </div>
+        </div>
+
+        <!-- Author Section -->
+        <div class="author-section">
+            <h2>👨‍💻 About the Author</h2>
+            <p style="font-size: 1.2em; margin: 20px 0;">
+                Developed by <strong>MD. MEHEDI HASAN REAL</strong>
+            </p>
+            <p style="margin: 15px 0;">
+                <a href="https://www.linkedin.com/in/mehedihasanreal/" target="_blank">
+                    🔗 Connect on LinkedIn
+                </a>
+            </p>
+            <p style="margin-top: 30px; font-size: 0.95em; opacity: 0.9;">
+                Licensed under LGPL-3
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+
